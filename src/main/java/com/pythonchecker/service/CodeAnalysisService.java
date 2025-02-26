@@ -131,6 +131,10 @@ public class CodeAnalysisService {
                         }
                         
                         String jsonStr = aiResponse.substring(jsonStart, jsonEnd);
+                        
+                        // 处理三重引号问题，将三重引号替换为单引号
+                        jsonStr = jsonStr.replaceAll("\"\"\"", "\"");
+                        
                         JsonNode rootNode = objectMapper.readTree(jsonStr);
                         
                         // 检查必要字段
@@ -305,6 +309,9 @@ public class CodeAnalysisService {
                         }
                         
                         String jsonStr = aiResponse.substring(jsonStart, jsonEnd);
+                        
+                        // 处理三重引号问题，将三重引号替换为单引号
+                        jsonStr = jsonStr.replaceAll("\"\"\"", "\"");
                         
                         try {
                             JsonNode analysisJson = objectMapper.readTree(jsonStr);

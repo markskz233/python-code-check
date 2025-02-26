@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS error_records (
 );
 
 -- 创建错误类型统计视图
-CREATE VIEW IF NOT EXISTS error_statistics AS
+CREATE OR REPLACE VIEW error_statistics AS
 SELECT 
     user_id,
     error_type,
@@ -20,5 +20,5 @@ FROM error_records
 GROUP BY user_id, error_type;
 
 -- 添加索引以提高查询性能
-CREATE INDEX IF NOT EXISTS idx_user_error_type ON error_records(user_id, error_type);
-CREATE INDEX IF NOT EXISTS idx_submit_time ON error_records(submit_time);
+CREATE INDEX idx_user_error_type ON error_records(user_id, error_type);
+CREATE INDEX idx_submit_time ON error_records(submit_time);
