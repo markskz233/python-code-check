@@ -5,7 +5,11 @@ document.addEventListener('DOMContentLoaded', function() {
         theme: 'monokai',
         lineNumbers: true,
         lineWrapping: true,
-        viewportMargin: Infinity
+        viewportMargin: 10,
+        scrollbarStyle: null,
+        autoRefresh: true,
+        fixedGutter: true,
+        lineWiseCopyCut: true
     });
 
     const codeEditor = CodeMirror.fromTextArea(document.getElementById('pythonCode'), {
@@ -13,8 +17,171 @@ document.addEventListener('DOMContentLoaded', function() {
         theme: 'monokai',
         lineNumbers: true,
         lineWrapping: true,
-        viewportMargin: Infinity,
-        indentUnit: 4
+        viewportMargin: 10,
+        indentUnit: 4,
+        scrollbarStyle: null,
+        autoRefresh: true,
+        fixedGutter: true,
+        lineWiseCopyCut: true
+    });
+
+    // 添加高度限制类
+    problemEditor.getWrapperElement().classList.add('input-limited');
+    codeEditor.getWrapperElement().classList.add('input-limited');
+    
+    // 设置编辑器高度
+    problemEditor.setSize(null, 300);
+    codeEditor.setSize(null, 300);
+    
+    // 添加内容变化监听器，确保内容变化时刷新编辑器
+    problemEditor.on('change', function() {
+        document.getElementById('problemDescription').value = problemEditor.getValue();
+        setTimeout(function() {
+            forceRefresh(problemEditor);
+        }, 10);
+    });
+    
+    codeEditor.on('change', function() {
+        document.getElementById('pythonCode').value = codeEditor.getValue();
+        setTimeout(function() {
+            forceRefresh(codeEditor);
+        }, 10);
+    });
+    
+    // 添加额外的刷新函数
+    function forceRefresh(editor) {
+        editor.refresh();
+        // 强制更新滚动条
+        const wrapper = editor.getWrapperElement();
+        const scrollbar = wrapper.querySelector('.CodeMirror-vscrollbar');
+        if (scrollbar) {
+            scrollbar.style.display = 'block';
+            scrollbar.style.right = '0';
+            scrollbar.style.bottom = '0';
+            scrollbar.style.top = '0';
+        }
+        
+        // 隐藏横向滚动条
+        const hscrollbar = wrapper.querySelector('.CodeMirror-hscrollbar');
+        if (hscrollbar) {
+            hscrollbar.style.display = 'none';
+        }
+        
+        // 确保内容可滚动
+        const scroll = wrapper.querySelector('.CodeMirror-scroll');
+        if (scroll) {
+            scroll.style.overflowY = 'scroll';
+            scroll.style.overflowX = 'hidden';
+            scroll.style.height = '300px';
+            scroll.style.minHeight = '300px';
+            scroll.style.maxHeight = '300px';
+            scroll.style.paddingBottom = '30px';
+            scroll.style.boxSizing = 'border-box';
+        }
+        
+        // 确保滚动条可见并限制高度
+        editor.setSize(null, 300);
+        
+        // 确保编辑器容器高度固定
+        wrapper.style.height = '300px';
+        wrapper.style.minHeight = '300px';
+        wrapper.style.maxHeight = '300px';
+        wrapper.style.overflow = 'hidden';
+    }
+    
+    // 初始化后强制刷新
+    setTimeout(function() {
+        forceRefresh(problemEditor);
+        forceRefresh(codeEditor);
+        
+        // 额外的刷新以确保内容正确显示
+        setTimeout(function() {
+            forceRefresh(problemEditor);
+            forceRefresh(codeEditor);
+        }, 500);
+    }, 100);
+    
+    // 监听窗口大小变化，刷新编辑器
+    window.addEventListener('resize', function() {
+        forceRefresh(problemEditor);
+        forceRefresh(codeEditor);
+    });
+
+    // 添加鼠标滚轮事件监听器
+    problemEditor.getWrapperElement().addEventListener('wheel', function(e) {
+        const scroll = problemEditor.getWrapperElement().querySelector('.CodeMirror-scroll');
+        if (scroll) {
+            // 确保滚动条可见
+            scroll.style.overflowY = 'scroll';
+            scroll.style.overflowX = 'hidden';
+            scroll.style.maxHeight = '300px';
+            scroll.style.minHeight = '300px';
+            scroll.style.height = '300px';
+        }
+        
+        // 隐藏横向滚动条
+        const hscrollbar = problemEditor.getWrapperElement().querySelector('.CodeMirror-hscrollbar');
+        if (hscrollbar) {
+            hscrollbar.style.display = 'none';
+        }
+        
+        // 确保编辑器容器高度固定
+        const wrapper = problemEditor.getWrapperElement();
+        wrapper.style.height = '300px';
+        wrapper.style.minHeight = '300px';
+        wrapper.style.maxHeight = '300px';
+        wrapper.style.overflow = 'hidden';
+    });
+    
+    codeEditor.getWrapperElement().addEventListener('wheel', function(e) {
+        const scroll = codeEditor.getWrapperElement().querySelector('.CodeMirror-scroll');
+        if (scroll) {
+            // 确保滚动条可见
+            scroll.style.overflowY = 'scroll';
+            scroll.style.overflowX = 'hidden';
+            scroll.style.maxHeight = '300px';
+            scroll.style.minHeight = '300px';
+            scroll.style.height = '300px';
+        }
+        
+        // 隐藏横向滚动条
+        const hscrollbar = codeEditor.getWrapperElement().querySelector('.CodeMirror-hscrollbar');
+        if (hscrollbar) {
+            hscrollbar.style.display = 'none';
+        }
+        
+        // 确保编辑器容器高度固定
+        const wrapper = codeEditor.getWrapperElement();
+        wrapper.style.height = '300px';
+        wrapper.style.minHeight = '300px';
+        wrapper.style.maxHeight = '300px';
+        wrapper.style.overflow = 'hidden';
+    });
+    
+    // 添加鼠标点击事件监听器
+    problemEditor.getWrapperElement().addEventListener('click', function() {
+        setTimeout(function() {
+            forceRefresh(problemEditor);
+        }, 10);
+    });
+    
+    codeEditor.getWrapperElement().addEventListener('click', function() {
+        setTimeout(function() {
+            forceRefresh(codeEditor);
+        }, 10);
+    });
+    
+    // 添加键盘事件监听器
+    problemEditor.on('keydown', function() {
+        setTimeout(function() {
+            forceRefresh(problemEditor);
+        }, 10);
+    });
+    
+    codeEditor.on('keydown', function() {
+        setTimeout(function() {
+            forceRefresh(codeEditor);
+        }, 10);
     });
 
     // 获取DOM元素
@@ -296,12 +463,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 处理代码纠正内容
                 let correctionText = analyzeResult.correction || '';
                 if (correctionText) {
-                    correctionText = correctionText.replace(/^['"]|['"]$/g, '');
-                    const codeMatch = correctionText.match(/```python\n([\s\S]*?)```/);
-                    if (codeMatch) {
-                        correctionText = codeMatch[1];
+                    try {
+                        // 移除可能的引号
+                        correctionText = correctionText.replace(/^['"]|['"]$/g, '');
+                        
+                        // 尝试提取代码块
+                        const codeMatch = correctionText.match(/```python\n([\s\S]*?)```/);
+                        if (codeMatch) {
+                            correctionText = codeMatch[1];
+                        }
+                        
+                        // 处理HTML实体
+                        correctionText = correctionText
+                            .replace(/&gt;/g, '>')
+                            .replace(/&lt;/g, '<')
+                            .replace(/&amp;/g, '&')
+                            .replace(/&quot;/g, '"')
+                            .replace(/&apos;/g, "'");
+                        
+                        // 处理转义字符
+                        correctionText = correctionText
+                            .replace(/\\n/g, '\n')
+                            .replace(/\\\\/g, '\\')
+                            .replace(/\\"/g, '"')
+                            .replace(/\\'/g, "'")
+                            .replace(/\\t/g, '\t');
+                        
+                        // 直接设置文本内容，不使用CodeMirror
+                        codeCorrection.textContent = correctionText;
+                        
+                    } catch (e) {
+                        console.error('处理代码纠正时出错:', e);
+                        codeCorrection.textContent = '代码格式化失败，原始内容: ' + correctionText;
                     }
-                    codeCorrection.textContent = correctionText;
                 } else {
                     codeCorrection.textContent = '无法提供代码修正建议';
                 }
