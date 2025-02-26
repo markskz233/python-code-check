@@ -1,0 +1,279 @@
+/* 全局样式 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* 全局字体变量 */
+:root {
+    --output-font-family: 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    --output-font-size: 14px;
+    --output-line-height: 1.6;
+}
+
+/* 代码编辑器样式 */
+.CodeMirror {
+    height: 200px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: var(--output-font-family);
+    font-size: var(--output-font-size);
+    line-height: var(--output-line-height);
+}
+
+/* 状态栏样式 */
+.status-bar {
+    text-align: center;
+    padding: 10px;
+    margin: 20px 0;
+}
+
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-weight: 500;
+    font-size: 14px;
+    margin: 0;
+}
+
+.status-animation {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-left: 10px;
+    animation: pulse 1.5s infinite;
+}
+
+.status-indicator.idle {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.status-indicator.processing {
+    background-color: #fff3e0;
+    color: #f57c00;
+}
+
+.status-indicator.analyzing {
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
+.status-indicator.completed {
+    background-color: #e8f5e9;
+    color: #388e3c;
+}
+
+.status-indicator.idle .status-animation {
+    background-color: #1976d2;
+}
+
+.status-indicator.processing .status-animation {
+    background-color: #f57c00;
+}
+
+.status-indicator.analyzing .status-animation {
+    background-color: #d32f2f;
+}
+
+.status-indicator.completed .status-animation {
+    background-color: #388e3c;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* 输出区域样式 */
+.output-section pre {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    font-family: var(--output-font-family);
+    font-size: var(--output-font-size);
+    line-height: var(--output-line-height);
+}
+
+/* 错误纠正区样式 */
+.error-correction-section {
+    margin: 20px 0;
+    padding: 15px;
+    border: 2px solid #d32f2f;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.error-correction-container {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.error-correction-box {
+    flex: 1;
+    background-color: white;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.error-correction-box h4 {
+    margin: 0 0 10px 0;
+    color: #d32f2f;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.analysis-box {
+    height: 200px;
+    overflow-y: auto;
+    font-family: var(--output-font-family);
+    font-size: var(--output-font-size);
+    line-height: var(--output-line-height);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* 按钮样式 */
+.btn-primary {
+    padding: 10px 30px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .row > div {
+        margin-bottom: 20px;
+    }
+}
+
+/* 测试数据展示区样式 */
+.test-data-section {
+    margin: 20px 0;
+    padding: 15px;
+    border: 2px solid #1976d2;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.test-data-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.test-data-title {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.test-data-title h3 {
+    margin: 0;
+}
+
+.test-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+    padding: 10px 30px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-danger:disabled {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.test-data-container {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.test-data-box {
+    flex: 1;
+    background-color: white;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.test-data-box h5 {
+    margin: 0 0 10px 0;
+    color: #1976d2;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.test-data-content {
+    height: 200px;
+    overflow-y: auto;
+    font-family: var(--output-font-family);
+    font-size: var(--output-font-size);
+    line-height: var(--output-line-height);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.test-data-section h3 {
+    margin: 0 0 15px 0;
+    color: #1976d2;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.error-correction-section h3 {
+    margin: 0 0 15px 0;
+    color: #d32f2f;
+    font-size: 1.5rem;
+    font-weight: 600;
+} 
