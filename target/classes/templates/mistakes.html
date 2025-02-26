@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>错题中心 - Python代码检查器</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+        <div class="container">
+            <a class="navbar-brand" href="/">Python代码检查器</a>
+            <div class="d-flex">
+                <a href="/" class="btn btn-outline-primary me-2">
+                    <i class="bi bi-house"></i>
+                    返回主页
+                </a>
+                <a href="/user" class="btn btn-primary">
+                    <i class="bi bi-person"></i>
+                    用户中心
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <h2 class="text-center mb-4">错题中心</h2>
+        
+        <!-- 错题分类展示 -->
+        <div class="row g-4">
+            <!-- 语法错误分类 -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="card-title mb-0">语法错误</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mistake-list accordion" id="syntaxErrorsAccordion" th:if="${not #lists.isEmpty(syntaxErrors)}">
+                            <div class="accordion-item mistake-item" th:each="error,iterStat : ${syntaxErrors}">
+                                <h2 class="accordion-header" th:id="'syntaxHeading' + ${iterStat.index}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            th:data-bs-target="'#syntaxCollapse' + ${iterStat.index}"
+                                            th:aria-expanded="false" th:aria-controls="'syntaxCollapse' + ${iterStat.index}"
+                                            th:text="${error.title}">题目标题</button>
+                                </h2>
+                                <div th:id="'syntaxCollapse' + ${iterStat.index}" class="accordion-collapse collapse"
+                                     th:aria-labelledby="'syntaxHeading' + ${iterStat.index}"
+                                     data-bs-parent="#syntaxErrorsAccordion">
+                                    <div class="accordion-body">
+                                        <pre class="bg-light p-2"><code th:text="${error.code}">错误代码</code></pre>
+                                        <p class="text-danger" th:text="${error.errorMessage}">错误信息</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-center" th:if="${#lists.isEmpty(syntaxErrors)}">暂无语法错误记录</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 逻辑错误分类 -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="card-title mb-0">逻辑错误</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mistake-list accordion" id="logicErrorsAccordion" th:if="${not #lists.isEmpty(logicErrors)}">
+                            <div class="accordion-item mistake-item" th:each="error,iterStat : ${logicErrors}">
+                                <h2 class="accordion-header" th:id="'logicHeading' + ${iterStat.index}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            th:data-bs-target="'#logicCollapse' + ${iterStat.index}"
+                                            th:aria-expanded="false" th:aria-controls="'logicCollapse' + ${iterStat.index}"
+                                            th:text="${error.title}">题目标题</button>
+                                </h2>
+                                <div th:id="'logicCollapse' + ${iterStat.index}" class="accordion-collapse collapse"
+                                     th:aria-labelledby="'logicHeading' + ${iterStat.index}"
+                                     data-bs-parent="#logicErrorsAccordion">
+                                    <div class="accordion-body">
+                                        <pre class="bg-light p-2"><code th:text="${error.code}">错误代码</code></pre>
+                                        <p class="text-danger" th:text="${error.errorMessage}">错误信息</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-center" th:if="${#lists.isEmpty(logicErrors)}">暂无逻辑错误记录</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
