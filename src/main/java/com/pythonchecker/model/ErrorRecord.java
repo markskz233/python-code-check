@@ -36,4 +36,12 @@ public class ErrorRecord {
 
     @Column(name = "submit_time")
     private LocalDateTime submitTime;
+
+    public Object getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Object userId) {
+        this.userId = (Long) userId;
+    }
 }

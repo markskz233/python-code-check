@@ -42,13 +42,23 @@ public class Mistake {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "error_record_id")
+    private Long errorRecordId;
+    
     private LocalDateTime createdAt;
-
+    
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
-
+    
+    public Long getErrorRecordId() {
+        return errorRecordId;
+    }
+    
+    public void setErrorRecordId(Long errorRecordId) {
+        this.errorRecordId = errorRecordId;
+    }
     // Getters and Setters
     public Long getId() {
         return id;

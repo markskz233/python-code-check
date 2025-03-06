@@ -28,4 +28,11 @@ public class MistakeService {
     public void deleteMistake(Long id) {
         mistakeRepository.deleteById(id);
     }
+
+    public void deleteMistakeByErrorRecordId(Long errorRecordId) {
+        List<Mistake> mistakes = mistakeRepository.findByErrorRecordId(errorRecordId);
+        if (!mistakes.isEmpty()) {
+            mistakes.forEach(mistake -> mistakeRepository.deleteById(mistake.getId()));
+        }
+    }
 }

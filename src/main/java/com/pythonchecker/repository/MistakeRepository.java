@@ -11,4 +11,5 @@ import java.util.List;
 public interface MistakeRepository extends JpaRepository<Mistake, Long> {
     List<Mistake> findByUser(User user);
     List<Mistake> findByUserAndErrorType(User user, String errorType);
+    List<Mistake> findByErrorRecordId(Long errorRecordId);
 }
