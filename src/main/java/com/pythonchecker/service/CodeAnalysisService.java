@@ -284,13 +284,13 @@ public class CodeAnalysisService {
                             "  \"isCorrect\": false,\n" +
                             "  \"analysis\": \"仅描述代码中存在的具体问题，例如：变量命名冲突、逻辑错误等\",\n" +
                             "  \"solution\": \"仅描述解决问题的具体步骤，例如：1. 修改变量名 2. 调整逻辑等\",\n" +
-                            "  \"correction\": \"完整的修正后代码，包含所有必要的修改，确保代码可以直接复制运行\"\n" +
+                            "  \"correction\": \"只包含修正后的完整代码，不要添加任何注释、说明或格式标记\"\n" +
                             "}\n\n" +
                             "注意事项：\n" +
                             "1. analysis必须具体指出代码中的问题（变量冲突、逻辑错误等）\n" +
                             "2. solution必须提供清晰的解决步骤\n" +
-                            "3. correction必须提供完整的、可直接运行的代码，不要使用代码片段，必须是完整的Python程序\n" +
-                            "4. correction字段中的代码必须格式正确，缩进一致，不要使用```python或```标记\n" +
+                            "3. correction必须仅包含修正后的纯代码，不要使用```python或```标记，不要添加任何说明或注释\n" +
+                            "4. correction字段中只提供纯代码，不要加任何标记或额外说明\n" +
                             "5. correction字段中的代码应该是原始格式，不需要转义换行符，直接使用实际的换行和缩进\n" +
                             "6. 如果是变量名冲突，必须提供修改建议\n" +
                             "7. 返回的JSON必须是标准格式，字段名和字段值都必须用双引号\n" +
@@ -623,41 +623,8 @@ public class CodeAnalysisService {
             return "无法提供代码修正建议";
         }
         
-        // 检查是否是简单的代码片段（如单行表达式）
-        if (!code.contains("\n") && (code.contains(">=") || code.contains("<=") || code.contains("==") || 
-            code.contains("and") || code.contains("or") || code.contains("if") || 
-            code.contains("return") || code.contains("for ") || 
-            code.contains("=") || code.contains("print(") || code.contains("import ") ||
-            code.contains("def ") || code.contains("class ") || code.contains("while "))) {
-            // 简单清理单行代码片段
-            code = code.trim()
-                      .replaceAll("^[\"']|[\"']$", "")  // 移除首尾引号
-                      .replaceAll("\\\\n", "\n")        // 处理转义的换行符
-                      .replaceAll("\\\\\"", "\"")       // 处理转义的引号
-                      .replaceAll("&gt;", ">")          // 处理HTML实体
-                      .replaceAll("&lt;", "<")
-                      .replaceAll("&amp;", "&")
-                      .replaceAll("&quot;", "\"")
-                      .replaceAll("&apos;", "'");
-            
-            // 检查单行代码是否完整
-            if (code.contains("(") && !code.contains(")")) {
-                code += ")";
-            }
-            if (code.contains("[") && !code.contains("]")) {
-                code += "]";
-            }
-            if (code.contains("{") && !code.contains("}")) {
-                code += "}";
-            }
-            
-            return code;
-        }
-        
-        // 移除代码块标记和注释
+        // 移除代码块标记和其他不必要的格式
         code = code.replaceAll("```python\\n?|```", "")
-                  .replaceAll("\"\"\".*?\"\"\"", "")
-                  .replaceAll("#.*$", "")
                   .trim();
         
         // 处理HTML实体
@@ -667,170 +634,19 @@ public class CodeAnalysisService {
                   .replaceAll("&quot;", "\"")
                   .replaceAll("&apos;", "'");
         
-        // 如果代码为空，返回默认消息
-        if (code.trim().isEmpty()) {
-            return "无法提供代码修正建议";
-        }
-        
-        // 检查代码是否以逗号开头，这通常表示代码片段不完整
-        if (code.trim().startsWith(",")) {
-            // 尝试移除开头的逗号
-            code = code.trim().substring(1).trim();
-        }
-        
         // 处理转义的换行符，将其转换为实际的换行符
         code = code.replaceAll("\\\\n", "\n");
         
         // 处理转义的引号
-        code = code.replaceAll("\\\\\"", "\"");
-        
-        // 处理缩进
-        String[] lines = code.split("\n");
-        StringBuilder formatted = new StringBuilder();
-        int baseIndent = -1;
-        
-        // 检查第一行是否是不完整的变量赋值
-        if (lines.length > 0 && !lines[0].contains("=") && 
-            (lines.length > 1 && lines[1].trim().startsWith("="))) {
-            // 合并第一行和第二行
-            if (lines.length > 1) {
-                lines[0] = lines[0].trim() + " " + lines[1].trim();
-                String[] newLines = new String[lines.length - 1];
-                newLines[0] = lines[0];
-                System.arraycopy(lines, 2, newLines, 1, lines.length - 2);
-                lines = newLines;
-            }
-        }
-        
-        // 检查是否有特殊的比较运算符格式问题
-        for (int i = 0; i < lines.length; i++) {
-            // 修复常见的比较运算符格式问题
-            lines[i] = lines[i].replaceAll("if\\s+n\\s*&gt;\\s*nx\\s*&gt;=\\s*0", "if n > nx >= 0")
-                              .replaceAll("if\\s+0\\s*&lt;=\\s*nx\\s*&lt;\\s*n", "if 0 <= nx < n")
-                              .replaceAll("if\\s+x\\s*&gt;=\\s*0\\s+and\\s+m\\s*&gt;\\s*ny\\s*&gt;=\\s*0", "if x >= 0 and m > ny >= 0")
-                              .replaceAll("x\\s*&gt;=\\s*0\\s+and\\s+m\\s*&gt;\\s*ny\\s*&gt;=\\s*0", "x >= 0 and m > ny >= 0");
-        }
-        
-        for (String line : lines) {
-            String trimmed = line.trim();
-            if (trimmed.isEmpty()) {
-                formatted.append("\n");
-                continue;
-            }
-            
-            // 计算当前行的缩进级别
-            int indent = line.indexOf(trimmed);
-            if (baseIndent == -1 && indent > 0) {
-                baseIndent = indent;
-            }
-            
-            // 规范化缩进（使用4个空格）
-            if (indent > 0) {
-                int spaces = baseIndent > 0 ? (indent / baseIndent) * 4 : 4;
-                formatted.append(" ".repeat(spaces));
-            }
-            
-            formatted.append(trimmed).append("\n");
-        }
-        
-        String result = formatted.toString().trim();
+        code = code.replaceAll("\\\\\"", "\"")
+                  .replaceAll("\\\\'", "'");
         
         // 如果结果为空，返回默认消息
-        if (result.isEmpty()) {
+        if (code.trim().isEmpty()) {
             return "无法提供代码修正建议";
         }
         
-        // 检查代码是否完整，如果不完整，尝试添加必要的结构
-        if (!result.contains("def ") && !result.contains("class ") && !result.contains("if __name__")) {
-            // 检查是否缺少变量声明
-            if (!result.contains("=") && result.contains(",") && !result.contains("(")) {
-                // 可能是变量声明的一部分
-                result = "变量声明: " + result;
-            }
-        }
-        
-        // 检查并修复常见的语法错误
-        result = result.replaceAll("if\\s+n\\s*>\\s*nx\\s*>=\\s*0\\s+and\\s+m\\s*>\\s*ny\\s*>=\\s*0:", "if n > nx >= 0 and m > ny >= 0:")
-                      .replaceAll("if\\s+0\\s*<=\\s*nx\\s*<\\s*n\\s+and\\s+0\\s*<=\\s*ny\\s*<\\s*m:", "if 0 <= nx < n and 0 <= ny < m:")
-                      .replaceAll("if\\s+x\\s*>=\\s*0\\s+and\\s+m\\s*>\\s*ny\\s*>=\\s*0:", "if x >= 0 and m > ny >= 0:");
-        
-        // 检查未闭合的括号、方括号和大括号
-        int openParens = 0, closeParens = 0;
-        int openBrackets = 0, closeBrackets = 0;
-        int openBraces = 0, closeBraces = 0;
-        
-        for (char c : result.toCharArray()) {
-            if (c == '(') openParens++;
-            if (c == ')') closeParens++;
-            if (c == '[') openBrackets++;
-            if (c == ']') closeBrackets++;
-            if (c == '{') openBraces++;
-            if (c == '}') closeBraces++;
-        }
-        
-        // 添加缺失的闭合括号
-        StringBuilder fixedResult = new StringBuilder(result);
-        
-        // 修复未闭合的括号
-        while (openParens > closeParens) {
-            fixedResult.append(")");
-            closeParens++;
-        }
-        
-        // 修复未闭合的方括号
-        while (openBrackets > closeBrackets) {
-            fixedResult.append("]");
-            closeBrackets++;
-        }
-        
-        // 修复未闭合的大括号
-        while (openBraces > closeBraces) {
-            fixedResult.append("}");
-            closeBraces++;
-        }
-        
-        // 检查代码是否以冒号结尾但没有后续代码块
-        if (fixedResult.toString().trim().endsWith(":")) {
-            fixedResult.append("\n    pass");
-        }
-        
-        // 检查是否有未闭合的引号
-        int singleQuotes = 0, doubleQuotes = 0;
-        boolean inSingleQuote = false, inDoubleQuote = false;
-        boolean escaped = false;
-        
-        for (char c : fixedResult.toString().toCharArray()) {
-            if (escaped) {
-                escaped = false;
-                continue;
-            }
-            
-            if (c == '\\') {
-                escaped = true;
-                continue;
-            }
-            
-            if (c == '\'' && !inDoubleQuote) {
-                inSingleQuote = !inSingleQuote;
-                singleQuotes++;
-            }
-            
-            if (c == '"' && !inSingleQuote) {
-                inDoubleQuote = !inDoubleQuote;
-                doubleQuotes++;
-            }
-        }
-        
-        // 如果有未闭合的引号，添加闭合引号
-        if (singleQuotes % 2 != 0) {
-            fixedResult.append("'");
-        }
-        
-        if (doubleQuotes % 2 != 0) {
-            fixedResult.append("\"");
-        }
-        
-        return fixedResult.toString();
+        return code;
     }
     
     /**

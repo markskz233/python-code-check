@@ -467,12 +467,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         // 移除可能的引号
                         correctionText = correctionText.replace(/^['"]|['"]$/g, '');
                         
-                        // 尝试提取代码块
-                        const codeMatch = correctionText.match(/```python\n([\s\S]*?)```/);
-                        if (codeMatch) {
-                            correctionText = codeMatch[1];
-                        }
-                        
                         // 处理HTML实体
                         correctionText = correctionText
                             .replace(/&gt;/g, '>')
